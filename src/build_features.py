@@ -28,7 +28,8 @@ def convert_columns(data):
     cnvrt = set(['Corners',
                  'Fouls',
                  'Goals',
-                 'Cards',
+                 'YellowCards',
+                 'RedCards',
                  'Shots',
                  'ShotsOnTarget',
                  'HalfTimeGoals',
@@ -66,8 +67,8 @@ def team_metric_location(rdd, metric='YellowCards', location='Home'):
     lbl = location_label(location)
 
     val = rdd.map(lambda row: (row[lbl],(row[location + metric], 1))) \
-             .reduceByKey(lambda (x, y): (x[0] + y[0], x[1] + y[1])) \
-             .map(lambda (t, (m, g)): (t, f / float(g))) \
+             .reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1])) \
+             .map(lambda (t, (m, g)): (t, m / float(g))) \
              .collectAsMap()
 
     return(val)
@@ -122,7 +123,7 @@ if __name__ == '__main__':
 
     #Switch DataFrame to RDD
     rdd = data.rdd
-
+    import pdb; pdb.set_trace()
     #Collect team metric given location
     h_yellow = team_metric_location(rdd, metric='YellowCards', location='Home')
 
